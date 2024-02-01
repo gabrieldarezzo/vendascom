@@ -51,10 +51,7 @@ public class SellingApplication {
 //                clientes.delete(c);
 //            });
 //
-//
-//            System.out.println("Exibindo todos os Clientes\n####");
-//            todosClientes = clientes.findAll();
-//            todosClientes.forEach(System.out::println);
+
 
 
         };
