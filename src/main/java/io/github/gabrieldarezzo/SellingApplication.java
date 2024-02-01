@@ -50,6 +50,12 @@ public class SellingApplication {
 //            clientes.findAll().forEach(c -> {
 //                clientes.delete(c);
 //            });
+
+
+            System.out.println("Buscando Cliente -> 'customFindByNome'");
+            clientes.customFindByNome("Darezzo").forEach(System.out::println);
+
+
 //
 
 
