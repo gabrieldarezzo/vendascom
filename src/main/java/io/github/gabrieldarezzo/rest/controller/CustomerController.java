@@ -6,14 +6,16 @@ import io.github.gabrieldarezzo.domain.repository.CustomerRepository;
 import net.bytebuddy.asm.Advice;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
 
-@Controller
+@RestController
 @RequestMapping("/customers")
 public class CustomerController {
 
@@ -25,62 +27,55 @@ public class CustomerController {
 
 
     @GetMapping("")
-    @ResponseBody
-    public ResponseEntity findByFields(Customer filterCustomer) {
-
+    public List<Customer> findByFields(Customer filterCustomer) {
         ExampleMatcher matcher = ExampleMatcher
                 .matching()
                 .withIgnoreCase()
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
 
         Example example = Example.of(filterCustomer, matcher);
-        List<Customer> customerList = customerRepository.findAll(example);
-
-        return ResponseEntity.ok(customerList);
-
+        return customerRepository.findAll(example);
     }
 
     @GetMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity getCustomerById(@PathVariable Integer id) {
+    public Customer getCustomerById(@PathVariable Integer id) {
         Optional<Customer> customer = customerRepository.findById(id);
 
-        if(customer.isPresent()) {
-            return ResponseEntity.ok(customer.get());
+        if(!customer.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
         }
 
-        return ResponseEntity.notFound().build();
+        return customer.get();
     }
 
     @PostMapping("")
-    @ResponseBody
-    public ResponseEntity save(@RequestBody Customer customer) {
-        Customer customerSaved = customerRepository.save(customer);
-        return ResponseEntity.ok(customerSaved);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Customer save(@RequestBody Customer customer) {
+        return customerRepository.save(customer);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity delete(@PathVariable Integer id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Integer id) {
         Optional<Customer> customer = customerRepository.findById(id);
 
-        if(customer.isPresent()) {
-            customerRepository.delete(customer.get());
-            return ResponseEntity.noContent().build();
+        if(!customer.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
         }
 
-        return ResponseEntity.notFound().build();
+        customerRepository.delete(customer.get());
     }
 
-
     @PutMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity update(@PathVariable Integer id, @RequestBody Customer customer) {
-        return customerRepository.findById(id).map(customerFound -> {
-            customer.setId(customerFound.getId());
-            customerRepository.save(customer);
-            return ResponseEntity.noContent().build();
-        }).orElseGet(() -> ResponseEntity.notFound().build());
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@PathVariable Integer id, @RequestBody Customer customer) {
+        customerRepository.findById(id)
+                .map(customerFound -> {
+                    customer.setId(customerFound.getId());
+                    customerRepository.save(customer);
+                    return customerFound;
+                })
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
     }
 
 }
