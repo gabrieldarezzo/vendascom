@@ -1,14 +1,11 @@
 package io.github.gabrieldarezzo.rest.controller;
 
-// import org.springframework.http.ResponseEntity;
 import io.github.gabrieldarezzo.domain.entity.Customer;
 import io.github.gabrieldarezzo.domain.repository.CustomerRepository;
 import net.bytebuddy.asm.Advice;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
