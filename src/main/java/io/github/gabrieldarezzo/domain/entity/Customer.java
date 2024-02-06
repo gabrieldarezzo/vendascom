@@ -1,7 +1,14 @@
 package io.github.gabrieldarezzo.domain.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 @Entity
 @Table(name = "customer")
 public class Customer {
@@ -15,46 +22,10 @@ public class Customer {
     @Column(name = "cpf", length = 11)
     private String cpf;
 
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public Customer() {
-    }
-
-    public Customer(String nome) {
-        this.name = name;
-    }
-
     public Customer(Integer id, String nome) {
         this.id = id;
         this.name = nome;
     }
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    @Override
-    public String toString() {
-        return "Cliente{" +
-                "id=" + id +
-                ", nome='" + name + '\'' +
-                '}';
-    }
 }
