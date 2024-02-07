@@ -3,8 +3,10 @@ import io.github.gabrieldarezzo.domain.entity.Order;
 import io.github.gabrieldarezzo.domain.entity.Product;
 import io.github.gabrieldarezzo.domain.repository.OrderRepository;
 import io.github.gabrieldarezzo.domain.services.OrderService;
+import io.github.gabrieldarezzo.rest.dto.OrderDTO;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,18 +16,22 @@ import java.util.List;
 @RequestMapping("/orders")
 public class OrderController {
 
-    private final OrderRepository orderRepository;
     private OrderService orderService;
 
-     public OrderController(OrderService orderService, OrderRepository orderRepository) {
+     public OrderController(OrderService orderService) {
          this.orderService = orderService;
-         this.orderRepository = orderRepository;
+     }
+
+     @PostMapping
+     @ResponseStatus(HttpStatus.CREATED)
+     public Integer save(@RequestBody OrderDTO dto) {
+         // System.out.println(dto.toString());
+         // return 1;
+         Order order = orderService.save(dto);
+         return order.getId();
      }
 
 
-    @GetMapping("")
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
-    }
+
 
 }
