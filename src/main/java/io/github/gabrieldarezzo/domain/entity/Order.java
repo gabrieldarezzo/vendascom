@@ -1,5 +1,6 @@
 package io.github.gabrieldarezzo.domain.entity;
 
+import io.github.gabrieldarezzo.domain.enums.StatusOrder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,11 @@ public class Order {
 
     @Column(name = "total", precision = 20, scale = 2, columnDefinition = "DECIMAL(10,2)")
     private BigDecimal total;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private StatusOrder statusOrder;
+
 
     @OneToMany(mappedBy = "order")
     private List<ItemOrder> itens;

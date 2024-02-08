@@ -1,4 +1,5 @@
 package io.github.gabrieldarezzo.rest.controller;
+import io.github.gabrieldarezzo.exception.BusinessRuleException;
 import io.github.gabrieldarezzo.exception.CustomException;
 import io.github.gabrieldarezzo.rest.ApiErrors;
 import org.springframework.http.HttpStatus;
@@ -14,4 +15,12 @@ public class ApplicationControllerAdvice {
         String messageError = ex.getMessage();
         return new ApiErrors(messageError);
     }
+
+    @ExceptionHandler(BusinessRuleException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiErrors handleBusinessException(BusinessRuleException ex) {
+        String messageError = ex.getMessage();
+        return new ApiErrors(messageError);
+    }
+
 }

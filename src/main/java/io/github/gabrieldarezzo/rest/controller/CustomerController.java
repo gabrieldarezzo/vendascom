@@ -39,7 +39,7 @@ public class CustomerController {
         Optional<Customer> customer = customerRepository.findById(id);
 
         if(!customer.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found:" + id);
         }
 
         return customer.get();

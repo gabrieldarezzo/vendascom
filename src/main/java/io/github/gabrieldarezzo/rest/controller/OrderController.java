@@ -1,10 +1,12 @@
 package io.github.gabrieldarezzo.rest.controller;
 import io.github.gabrieldarezzo.domain.entity.ItemOrder;
 import io.github.gabrieldarezzo.domain.entity.Order;
+import io.github.gabrieldarezzo.domain.enums.StatusOrder;
 import io.github.gabrieldarezzo.domain.services.OrderService;
 import io.github.gabrieldarezzo.rest.dto.DetailOrderDTO;
 import io.github.gabrieldarezzo.rest.dto.DetailtemsOrderDTO;
 import io.github.gabrieldarezzo.rest.dto.OrderDTO;
+import io.github.gabrieldarezzo.rest.dto.UpdateStatusOrderDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -34,14 +36,19 @@ public class OrderController {
      }
 
     @GetMapping("{id}")
-    public DetailOrderDTO getById(@PathVariable Integer id ) {
-
-         System.out.println("#### id: " + id);
+    public DetailOrderDTO getById(@PathVariable Integer id) {
          return orderService
             .getFullOrder(id)
              .map(order -> converterOrder(order))
              .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found:" + id));
 
+    }
+
+    @PatchMapping("status/{orderId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateStatus(@PathVariable Integer orderId, @RequestBody UpdateStatusOrderDTO newStatusOrderDTO) {
+        String newStatusOrder = newStatusOrderDTO.getNewStatusOrder();
+        orderService.updateStatus(orderId, StatusOrder.valueOf(newStatusOrder));
     }
 
 
@@ -53,6 +60,7 @@ public class OrderController {
                 .cpf(order.getCustomer().getCpf())
                 .customerName(order.getCustomer().getName())
                 .total(order.getTotal())
+                .status(order.getStatusOrder().name())
                 .itemsOrder(converterItemsOrder(order.getItens()))
                 .build();
     }

@@ -14,6 +14,7 @@ CREATE TABLE customer_order (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     customer_id INTEGER REFERENCES customer (id),
     date_order DATE,
+    status VARCHAR(20),
     total NUMERIC(20,2)
 );
 

@@ -5,18 +5,21 @@ import io.github.gabrieldarezzo.domain.entity.Customer;
 import io.github.gabrieldarezzo.domain.entity.ItemOrder;
 import io.github.gabrieldarezzo.domain.entity.Order;
 import io.github.gabrieldarezzo.domain.entity.Product;
+import io.github.gabrieldarezzo.domain.enums.StatusOrder;
 import io.github.gabrieldarezzo.domain.repository.CustomerRepository;
 import io.github.gabrieldarezzo.domain.repository.ItemOrderRepository;
 import io.github.gabrieldarezzo.domain.repository.OrderRepository;
 import io.github.gabrieldarezzo.domain.repository.ProductRepository;
 import io.github.gabrieldarezzo.domain.services.OrderService;
 import io.github.gabrieldarezzo.exception.NotFoundCustomerException;
+import io.github.gabrieldarezzo.exception.NotFoundOrderException;
 import io.github.gabrieldarezzo.exception.NotFoundProductException;
 import io.github.gabrieldarezzo.rest.dto.ItemOrderDTO;
 import io.github.gabrieldarezzo.rest.dto.OrderDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -44,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
         order.setTotal(dto.getTotal());
         order.setDateOrder(LocalDate.now());
         order.setCustomer(customer);
+        order.setStatusOrder(StatusOrder.COMPLETED);
 
         List<ItemOrder> itemsOrder = convertItems(order, dto.getItems());
         orderRepository.save(order);
@@ -51,6 +55,19 @@ public class OrderServiceImpl implements OrderService {
         order.setItens(itemsOrder);
         return order;
     }
+
+    @Override
+    @Transactional
+    public void updateStatus(Integer orderId, StatusOrder newStatusOrder) {
+        Order order = orderRepository
+                .findById(orderId)
+                .orElseThrow(() -> new NotFoundOrderException("Order not found:" + orderId));
+
+        order.setStatusOrder(newStatusOrder);
+        orderRepository.save(order);
+    }
+
+
 
 
     private List<ItemOrder> convertItems(Order order, List<ItemOrderDTO> itemsDto){
