@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,16 +40,12 @@ public class OrderServiceImpl implements OrderService {
                 .findById(customerId)
                 .orElseThrow(() -> new NotFoundCustomerException("customerId not found"));
 
-        System.out.println("DTO" + dto.toString());
-
         Order order = new Order();
         order.setTotal(dto.getTotal());
         order.setDateOrder(LocalDate.now());
         order.setCustomer(customer);
 
-        System.out.println("customer" + customer.toString());
-
-        List<ItemOrder> itemsOrder = convertItens(order, dto.getItems());
+        List<ItemOrder> itemsOrder = convertItems(order, dto.getItems());
         orderRepository.save(order);
         itemOrderRepository.saveAll(itemsOrder);
         order.setItens(itemsOrder);
@@ -56,9 +53,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    private List<ItemOrder> convertItens(Order order, List<ItemOrderDTO> itemsDto){
+    private List<ItemOrder> convertItems(Order order, List<ItemOrderDTO> itemsDto){
         if(itemsDto.isEmpty()){
-            new NotFoundCustomerException("itens is empty");
+            new NotFoundCustomerException("items is empty");
         }
 
         return itemsDto
@@ -71,7 +68,6 @@ public class OrderServiceImpl implements OrderService {
                             .orElseThrow(
                                     () -> new NotFoundProductException("productId not found: " + productId)
                             );
-
                     ItemOrder itemOrder = new ItemOrder();
                     itemOrder.setAmount(dto.getAmount());
                     itemOrder.setOrder(order);
@@ -79,5 +75,10 @@ public class OrderServiceImpl implements OrderService {
 
                     return itemOrder;
                 }).collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<Order> getFullOrder(Integer orderId) {
+        return orderRepository.findByIdFetchItens(orderId);
     }
 }
