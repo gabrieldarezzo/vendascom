@@ -24,8 +24,8 @@ public class SellingApplication {
     public CommandLineRunner init(@Autowired CustomerRepository customerRepository){
         return args -> {
             System.out.println("Salvando Clientes");
-            customerRepository.save(new Customer(null, "Darezzo"));
-            customerRepository.save(new Customer(null, "Sousa"));
+            customerRepository.save(new Customer(null, "Darezzo", "41297505859"));
+            customerRepository.save(new Customer(null, "Sousa", "22233366638"));
         };
 
     }
